@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
 		kub.vm.network "private_network", ip: "192.168.56.101"
 
 		kub.vm.provider "virtualbox" do |v|
-			v.customize ["modifyvm", :id, "--groups", "/K8S_POC"]
+			v.customize ["modifyvm", :id, "--groups", "/K8S_CLUSTER"]
 			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
 			v.customize ["modifyvm", :id, "--memory", 2048]
 			v.customize ["modifyvm", :id, "--name", "kubemaster"]
