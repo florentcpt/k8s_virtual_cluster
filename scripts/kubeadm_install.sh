@@ -16,9 +16,18 @@ disable_swap() {
 	swapoff -a
 }
 
+set_iptables() {
+	modprobe br_netfilter
+	# TODO: Make below lines idempotent, currenlty the file content is overrided
+	echo "net.bridge.bridge-nf-call-ip6tables = 1" >/etc/sysctl.d/k8s.conf
+	echo "net.bridge.bridge-nf-call-iptables = 1" >>/etc/sysctl.d/k8s.conf
+	sysctl --system
+}
+
 install_docker() {
 	apt-get update
 	apt-get install -y docker.io
+	systemctl enable docker.service
 }
 
 grant_docker_to_user() {
@@ -36,6 +45,7 @@ install_k8s() {
 }
 
 disable_swap
+set_iptables
 install_docker
 grant_docker_to_user $DOCKER_USER
 install_k8s
