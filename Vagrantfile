@@ -11,15 +11,17 @@ Vagrant.configure("2") do |config|
 	end
 	
 	config.vm.define "master" do |master|
+		master_ip = "192.168.56.101"
+		
 		master.vm.hostname = "kubemaster"
 
-		master.vm.network "private_network", ip: "192.168.56.101"
+		master.vm.network "private_network", ip: master_ip
 
 		master.vm.provider "virtualbox" do |v|
 			v.customize ["modifyvm", :id, "--name", "kubemaster"]
 		end
 
-		master.vm.provision "K8S master node", type:"shell", path: "scripts/k8s_master.sh"
+		master.vm.provision "K8S master node", type:"shell", path: "scripts/k8s_master.sh", args: [master_ip]
 	end
 	
 	config.vm.define "node" do |node|

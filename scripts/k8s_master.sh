@@ -5,14 +5,15 @@
 # Currently designed to be run as a Vagrant provisionner.
 # Implementing [K8S documentation](https://kubernetes.io/fr/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
 #
+# USAGE: k8s_master.sh {k8s_api_ip}
+#
 # Author: Florent Captier
 # Version: 0.1.0
 
 set -e
 
 declare KUBEADM_OPTS="--node-name $HOSTNAME"
-# TODO: Retrieve IP from script options
-declare K8S_API_IP="192.168.56.101"
+declare -r K8S_API_IP="$1"
 
 # Set pod-network-cidr according to Flannel requisites
 KUBEADM_OPTS+=" --pod-network-cidr=10.244.0.0/16"  
