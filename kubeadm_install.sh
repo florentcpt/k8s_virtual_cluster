@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Provision an Ubuntu server with kubeadm, kubelet and kuectl commands to act as a Kubernetes node
+#
+# Currently designed to be run as a Vagrant provisionner.
+# Implementing [K8S documentation](https://kubernetes.io/fr/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+#
+# Author: Florent Captier
+# Version: 0.1.0
+
 set -e
 
 declare -r DOCKER_USER="vagrant"
