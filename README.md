@@ -15,3 +15,29 @@ It will create 2 VMs (Ubuntu-based), one acting as K8S cluster master, the other
 
 - Clone this repository
 - Run `vagrant up`
+
+At this stage you should have a working cluster.
+
+You can now connect to the master : `vagrant ssh master`
+And use `kubectl`, `kubeadm` commands.
+
+ENJOY :smile:
+
+### Set the cluster size
+
+You can specify the size of the cluster (minimum 2) by setting the `K8S_CLUSTER_SIZE` variable.
+
+## Tips
+
+### Get the K8S cluster state
+
+```shell
+$ vagrant ssh master
+# [...]
+vagrant@kubemaster:~$ sudo kubectl get nodes -o wide
+```
+
+## Known issues
+
+If you created a cluster specifying a custom size, do not forget to set the environment variable to see other commands (`status`, `ssh`, `destroy`, ...) working.
+Otherwise vagrant will try to deal with the default cluster size.
