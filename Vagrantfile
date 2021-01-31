@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
 		
 		master.vm.hostname = "kubemaster"
 
-		master.vm.network "private_network", ip: master_ip
+		master.vm.network "private_network", ip: master_ip, hostname: true
 
 		master.vm.provider "virtualbox" do |v|
 			v.customize ["modifyvm", :id, "--name", "kubemaster"]
@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
 	config.vm.define "node" do |node|
 		node.vm.hostname = "kubenode"
 
-		node.vm.network "private_network", ip: "192.168.56.102"
+		node.vm.network "private_network", ip: "192.168.56.102", hostname: true
 
 		node.vm.provider "virtualbox" do |v|
 			v.customize ["modifyvm", :id, "--name", "kubenode"]
