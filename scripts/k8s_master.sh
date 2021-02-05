@@ -33,12 +33,14 @@ initialize_master() {
 }
 
 create_user_k8s_config() {
-	local KUBE_CONF="$HOME/.kube/config"
+	local USER="$1"
+	eval local KUBE_CONF=~$USER/.kube/config
 	mkdir -p $(dirname $KUBE_CONF)
 	cp -if /etc/kubernetes/admin.conf $KUBE_CONF
-	chown $(id -u):$(id -g) $KUBE_CONF
+	chown $(id -u $USER):$(id -g $USER) $KUBE_CONF
 }
 
 initialize_master
-create_user_k8s_config
+create_user_k8s_config root
+create_user_k8s_config vagrant
 install_network_addon
