@@ -15,7 +15,7 @@ set -e
 declare KUBEADM_OPTS="--node-name $HOSTNAME"
 declare -r K8S_API_IP="$1"
 
-# Set pod-network-cidr according to Flannel requisites
+# Be sure that the following network is in-line with the one declared in k8s_manifests/calico.yml
 KUBEADM_OPTS+=" --pod-network-cidr=10.244.0.0/16"  
 KUBEADM_OPTS+=" --apiserver-advertise-address=${K8S_API_IP}"
 
@@ -35,7 +35,8 @@ install_network_addon() {
 	# Install Flannel as network add-on
 	# https://kubernetes.io/fr/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tabs-pod-install-4
 	sysctl net.bridge.bridge-nf-call-iptables=1
-	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+	kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+	kubectl create -f /vagrant/k8s_manifests/calico.yaml
 }
 
 initialize_master() {
