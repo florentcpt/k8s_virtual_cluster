@@ -40,7 +40,17 @@ create_user_k8s_config() {
 	chown $(id -u $USER):$(id -g $USER) $KUBE_CONF
 }
 
+shell_autocompletion_for_user() {
+	local USER="$1"
+	eval local SHELL_RC=~$USER/.bashrc
+	local SHELL_LINE="source <(kubectl completion bash)"
+	
+	grep -q "^${SHELL_LINE}$" $SHELL_RC || echo "$SHELL_LINE" >> $SHELL_RC
+}
+
 initialize_master
 create_user_k8s_config root
 create_user_k8s_config vagrant
 install_network_addon
+shell_autocompletion_for_user root
+shell_autocompletion_for_user vagrant
