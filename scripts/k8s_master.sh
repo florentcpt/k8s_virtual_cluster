@@ -19,6 +19,18 @@ declare -r K8S_API_IP="$1"
 KUBEADM_OPTS+=" --pod-network-cidr=10.244.0.0/16"  
 KUBEADM_OPTS+=" --apiserver-advertise-address=${K8S_API_IP}"
 
+safe_insert_line_in_file() {
+	# Safely insert a line in a given file
+	# If the line already exists in the file it will be a noop operation (avoiding duplication)
+	# USAGE: safe_insert_line_in_file {file} {line}
+	
+	local FILE="$1"
+	shift
+	local LINE="$@"
+	
+	grep -q "^${LINE}$" $FILE || echo "$LINE" >> $FILE
+}
+
 install_network_addon() {
 	# Install Flannel as network add-on
 	# https://kubernetes.io/fr/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tabs-pod-install-4
@@ -45,7 +57,15 @@ shell_autocompletion_for_user() {
 	eval local SHELL_RC=~$USER/.bashrc
 	local SHELL_LINE="source <(kubectl completion bash)"
 	
-	grep -q "^${SHELL_LINE}$" $SHELL_RC || echo "$SHELL_LINE" >> $SHELL_RC
+	safe_insert_line_in_file $SHELL_RC $SHELL_LINE
+}
+
+shell_aliases_for_user() {
+	local USER="$1"
+	eval local SHELL_RC=~$USER/.bashrc
+	
+	safe_insert_line_in_file $SHELL_RC alias k=kubectl
+	safe_insert_line_in_file $SHELL_RC complete -F __start_kubectl k
 }
 
 initialize_master
@@ -54,3 +74,5 @@ create_user_k8s_config vagrant
 install_network_addon
 shell_autocompletion_for_user root
 shell_autocompletion_for_user vagrant
+shell_aliases_for_user root
+shell_aliases_for_user vagrant
