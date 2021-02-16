@@ -1,0 +1,41 @@
+---
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: 'monnginx'
+  namespace: 'default'
+  labels:
+    app: 'monnginx'
+spec:
+  selector:
+    matchLabels:
+      app: 'monnginx'
+  template:
+    metadata:
+      name: 'monnginx'
+      namespace: 'default'
+      labels:
+        app: 'monnginx'
+    spec:
+      containers:
+        - name: 'monnginx'
+          image: 'nginx:latest'
+  replicas: 2
+  strategy:
+    type: 'RollingUpdate'
+
+---
+apiVersion: 'v1'
+kind: 'Service'
+metadata:
+  name: 'monnginx'
+  namespace: 'default'
+  labels:
+    app: 'monnginx'
+spec:
+  selector:
+    app: 'monnginx'
+  type: 'NodePort'
+  ports:
+    - port: 80
+      protocol: 'TCP'
