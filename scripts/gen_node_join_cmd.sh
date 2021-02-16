@@ -10,6 +10,8 @@
 
 set -e
 
+export DEBIAN_FRONTEND=noninteractive
+
 declare MOUNT_POINT="$1"
 declare OUTPUT_FILE="${MOUNT_POINT}/$2"
 

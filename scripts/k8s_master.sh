@@ -12,6 +12,8 @@
 
 set -e
 
+export DEBIAN_FRONTEND=noninteractive
+
 declare KUBEADM_OPTS="--node-name $HOSTNAME"
 declare -r K8S_API_IP="$1"
 

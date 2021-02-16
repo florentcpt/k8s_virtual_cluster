@@ -10,7 +10,7 @@
 
 set -e
 
-declare -r DOCKER_USER="vagrant"
+export DEBIAN_FRONTEND=noninteractive
 
 disable_swap() {
 	swapoff -a
@@ -24,14 +24,36 @@ set_iptables() {
 	sysctl --system
 }
 
-install_docker() {
-	apt-get update
-	apt-get install -y docker.io
-	systemctl enable docker.service
-}
+install_container_runtime() {
+	# Install containerd as container runtime
+	# See [doc](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd)
+	
+	# Pre-requisites
+	echo "overlay" > /etc/modules-load.d/containerd.conf
+	echo "br_netfilter" >> /etc/modules-load.d/containerd.conf
 
-grant_docker_to_user() {
-	usermod -aG docker $1
+	modprobe overlay
+	modprobe br_netfilter
+
+	# Setup required sysctl params, these persist across reboots.
+	echo "net.bridge.bridge-nf-call-iptables = 1" > /etc/sysctl.d/99-kubernetes-cri.conf
+	echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.d/99-kubernetes-cri.conf
+	echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.d/99-kubernetes-cri.conf
+
+	# Apply sysctl params without reboot
+	sysctl --system
+	
+	# Install containerd
+	apt-get update && apt-get install -y containerd
+	
+	# Apply a default config if not existing
+	if [ ! -d /etc/containerd ]; then
+		mkdir -p /etc/containerd
+		containerd config default > /etc/containerd/config.toml
+	fi
+	
+	# Restart containerd
+	systemctl restart containerd
 }
 
 install_k8s() {
@@ -46,6 +68,5 @@ install_k8s() {
 
 disable_swap
 set_iptables
-install_docker
-grant_docker_to_user $DOCKER_USER
+install_container_runtime
 install_k8s
